@@ -15,7 +15,7 @@ const schemaArray = [
                 type: 'String'
             },
             {
-                name: 'posts',
+                name: 'post',
                 type: '[Post]'
             },
 
@@ -55,7 +55,7 @@ const schemaArray = [
                 type: 'String'
             },
             {
-                name: 'catrgory',
+                name: 'catergory',
                 type: 'Int'
             },
             {

@@ -175,13 +175,14 @@ schemaArray.map(field => {
             temp[item.name] = async (parent) => {
                 let postData: any = [];
                 await getDatas(key, children).then(data => { postData = data; })
-                return postData;
-                // if (item.type.indexOf('[') > -1) {
-                //     return postData.filter(child => child[key + 'Id'] === parent.id)
-                // } else {
+                // return postData;
+                if (item.type.indexOf('[') > -1) {
+                    // return postData
+                    return postData.filter(child => child[item.name.slice(-1)] === parent.id)
+                } else {
 
-                //     return postData.find(child => child[key + 'Id'] === parent.id)
-                // }
+                    return postData.find(child => child.id === parent[key])
+                }
             };
             console.log(temp[item.name]);
 
