@@ -12,7 +12,6 @@ interface Node {
   id: String!
 }
 
-
 type Pagination {
   page: Int
   list: [Node]

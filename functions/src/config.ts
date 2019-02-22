@@ -55,12 +55,27 @@ const schemaArray = [
                 type: 'String'
             },
             {
-                name: 'catergory',
-                type: 'Int'
+                name: 'category',
+                type: 'Category'
             },
             {
                 name: 'author',
                 type: 'Author'
+            },
+
+        ]
+    },
+
+    {
+        name: 'Category',
+        children: [
+            {
+                name: 'id',
+                type: 'String!'
+            },
+            {
+                name: 'name',
+                type: 'String'
             },
 
         ]
