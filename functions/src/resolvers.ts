@@ -7,7 +7,7 @@ import { filter, map } from 'lodash'
 admin.initializeApp()
 
 
-const getDatas = (model, children) => {
+const getDatas = (model) => {
     return new Promise((resolve, reject) => {
         const postData = [];
         const db = admin.firestore();
@@ -15,10 +15,10 @@ const getDatas = (model, children) => {
             .then(snapshot => {
                 snapshot.forEach(doc => {
                     const post = doc.data();
-                    const postTmp: any = {};
-                    children.map(item => {
-                        postTmp[item.name] = post[item.name]
-                    })
+                    const postTmp: any = post;
+                    // children.map(item => {
+                    //     postTmp[item.name] = post[item.name]
+                    // })
                     postTmp.id = doc.id
 
 
@@ -34,17 +34,17 @@ const getDatas = (model, children) => {
     });
 }
 
-const getData = (model, children, id) => {
+const getData = (model, id) => {
     return new Promise((resolve, reject) => {
         // const postData: any  = {};
         const db = admin.firestore();
         db.collection(model).doc(id).get()
             .then(doc => {
                 const post = doc.data();
-                const postTmp: any = {};
-                children.map(item => {
-                    postTmp[item.name] = post[item.name]
-                })
+                const postTmp: any = post;
+                // children.map(item => {
+                //     postTmp[item.name] = post[item.name]
+                // })
                 postTmp.id = doc.id
 
                 console.log(postTmp);
@@ -98,18 +98,7 @@ const deleteData = (model, id) => {
 
 const resolveFunctions = {
     Json: GraphQLJSON,
-    Query: {
-        // async posts() {
-        //     let postData: any = [];
-        //     await getDataPost().then(data => { postData = data; })
-        //     return postData
-        // },
-        // async authors() {
-        //     let postData: any = [];
-        //     await getDataAuthor().then(data => { postData = data; })
-        //     return postData
-        // },
-    },
+    Query: {},
     Mutation: {
         async createOne(_, { model, data }) {
             console.log(model, data);
@@ -127,20 +116,6 @@ const resolveFunctions = {
             return { success: true, message: 'Done!' }
         },
     },
-    // Author: {
-    //     async posts(author) {
-    //         let postData: any = [];
-    //         await getDataPost().then(data => { postData = data; })
-    //         return postData.filter(post => post.authorId === author.id)
-    //     }
-    // },
-    // Post: {
-    //     async author(post) {
-    //         let postData: any = [];
-    //         await getDataAuthor().then(data => { postData = data; })
-    //         return postData.find(author => author.id === post.authorId)
-    //     }
-    // },
 }
 schemaArray.map(field => {
     resolveFunctions[toTitleCase(field.name)] = {}
@@ -157,6 +132,11 @@ schemaArray.map(field => {
             && item.type !== '[String]'
             && item.type !== '[Float]'
             && item.type !== '[Float]!'
+            && item.type !== 'Boolean'
+            && item.type !== 'Boolean!'
+            && item.type !== '[Boolean]'
+            && item.type !== '[Boolean]!'
+            
         ) {
 
             let key = item.type;
@@ -164,21 +144,17 @@ schemaArray.map(field => {
                 key = item.type.slice(1, -1);
             }
             const temp = {};
-            let children = [];
             key = key.toLowerCase();
-            schemaArray.map(t=>{
-                if(t.name.toLowerCase() === key){
-                    children = t.children;
-                }
-            })
 
             temp[item.name] = async (parent) => {
                 let postData: any = [];
-                await getDatas(key, children).then(data => { postData = data; })
+                await getDatas(key).then(data => { postData = data; })
                 // return postData;
                 if (item.type.indexOf('[') > -1) {
                     // return postData
-                    return postData.filter(child => child[item.name.slice(-1)] === parent.id)
+                    return postData.filter(child => {
+                        return child[field.name.toLowerCase()] === parent.id
+                    })
                 } else {
 
                     return postData.find(child => child.id === parent[key])
@@ -198,14 +174,14 @@ schemaArray.map(item => {
     const temp = {};
     temp[item.name.toLowerCase()] = async (_, { id }) => {
         let postData: any = [];
-        await getData(item.name.toLowerCase(), item.children, id).then(data => { postData = data; })
+        await getData(item.name.toLowerCase(), id).then(data => { postData = data; })
         return postData
     };
 
 
     temp[item.name.toLowerCase() + 's'] = async () => {
         let postData: any = [];
-        await getDatas(item.name.toLowerCase(), item.children).then(data => { postData = data; })
+        await getDatas(item.name.toLowerCase()).then(data => { postData = data; })
         return postData
     };
 
