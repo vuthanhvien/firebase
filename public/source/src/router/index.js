@@ -2,10 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // Containers
-const DefaultContainer = () => import('@/containers/DefaultContainer')
-const Dashboard = () => import('@/views/Dashboard')
 const Posts = () => import('@/views/Posts')
-const Authors = () => import('@/views/Authors')
+const DefaultContainer = () => import('@/containers/DefaultContainer')
 
 Vue.use(Router)
 
@@ -16,23 +14,15 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/Posts',
       name: 'Home',
       component: DefaultContainer,
       children: [
+        
         {
-          path: 'dashboard',
-          name: 'Dashboard',
-          component: Dashboard
-        },
-        {
-          path: 'posts',
+          path: '/:id',
           name: 'Posts',
           component: Posts
-        }, {
-          path: 'authors',
-          name: 'Authors',
-          component: Authors
         },
       ]
     },

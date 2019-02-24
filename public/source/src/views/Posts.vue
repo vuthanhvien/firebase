@@ -1,151 +1,192 @@
 <template>
   <div class="animated fadeIn">
+    <div class="row">
+      <div class="col-7">
+        <h4>
+          <strong>{{menu}}</strong>
+        </h4>
+      </div>
+      <div class="col-5">
+        <div class="text-right">
+          <b-button v-b-toggle.collapse1 variant="primary">
+            <i class="fa fa-plus"/> Add
+            <i class="fa fa-chevron-down"/>
+          </b-button>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <b-collapse id="collapse1">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Add new {{menu}}</h5>
+          <hr>
+          <b-form @submit="onSubmit" @reset="onReset">
+            <b-form-group
+              v-for="col of tableFields"
+              :key="col.name"
+              :label="col.name"
+              label-for="exampleInput2"
+            >
+              <b-form-input type="text" v-model="form[col.name]" :placeholder="'Enter '+ col.name"/>
+            </b-form-group>
+            <hr>
+            <div class="text-right">
+              <b-button type="submit" variant="primary">Submit</b-button>&nbsp;
+              <b-button type="reset" variant="danger">Reset</b-button>
+            </div>
+          </b-form>
+        </div>
+      </div>
+    </b-collapse>
     <div class="card">
-          <b-table class="mb-0 table-outline" responsive="sm" hover :items="tableItems" :fields="tableFields" head-variant="light">
-            <div slot="avatar" class="avatar" slot-scope="item">
-              <img :src="item.value.url" class="img-avatar" alt="">
-              <span class="avatar-status" v-bind:class="{ 'bg-success': item.value.status == 'success',  'bg-warning': item.value.status == 'warning', 'bg-danger': item.value.status == 'danger', 'bg-secondary': item.value.status == '' }"></span>
-            </div>
-            <div slot="user" slot-scope="item">
-              <div>{{item.value.name}}</div>
-              <div class="small text-muted">
-                <span>
-                  <template v-if="item.value.new">New</template>
-                  <template v-else>Recurring</template>
-                </span> | Registered: {{item.value.registered}}
-              </div>
-            </div>
-            <i slot="country" class="h4 mb-0" :class="flag(item.value.flag)" slot-scope="item" :title="item.value.flag" :id="item.value.flag"></i>
-            <i class="flag-icon flag-icon-pw h1" title="pw" id="pw"></i>
-            <div slot="usage" slot-scope="item">
-              <div class="clearfix">
-                <div class="float-left">
-                  <strong>{{item.value.value}}%</strong>
-                </div>
-                <div class="float-right">
-                  <small class="text-muted">{{item.value.period}}</small>
-                </div>
-              </div>
-              <b-progress height={} class="progress-xs" v-model="item.value.value" :variant="variant(item.value.value)"></b-progress>
-            </div>
-            <i slot="payment" slot-scope="item" :class="item.value.icon" style="font-size:24px"></i>
-            <div slot="activity" slot-scope="item">
-              <div class="small text-muted">Last login</div>
-              <strong>{{item.value}}</strong>
-            </div>
-          </b-table>
-  </div>
+      <table class="table">
+        <tr>
+          <th
+            :style="{width: col.name == 'id' ? '50px' : ''}"
+            v-for="col of tableFields"
+            :key="col.name"
+          >{{col.name}}</th>
+          <th class="text-center">Action</th>
+        </tr>
+        <tr v-for="row of tableItems" :key="row.id">
+          <td
+            v-for="col of tableFields"
+            :key="col.name"
+          >{{row[col.name] && row[col.name].id ? row[col.name].name : row[col.name]}}</td>
+          <td style="width: 100px; white-space: nowrap">
+            <button class="btn btn-primary" @click="edit(row)">Edit</button>&nbsp;
+            <button class="btn btn-danger">Delete</button>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import gql from "graphql-tag";
 
 export default {
-  name: 'dashboard',
-  components: {
-  },
-  data: function () {
+  name: "post",
+  components: {},
+  data: () => {
     return {
-      selected: 'Month',
-      tableItems: [
-        {
-          avatar: { url: 'img/avatars/1.jpg', status: 'success' },
-          user: { name: 'Yiorgos Avraamu', new: true, registered: 'Jan 1, 2015' },
-          country: { name: 'USA', flag: 'us' },
-          usage: { value: 50, period: 'Jun 11, 2015 - Jul 10, 2015' },
-          payment: { name: 'Mastercard', icon: 'fa fa-cc-mastercard' },
-          activity: '10 sec ago'
-        },
-        {
-          avatar: { url: 'img/avatars/2.jpg', status: 'danger' },
-          user: { name: 'Avram Tarasios', new: false, registered: 'Jan 1, 2015' },
-          country: { name: 'Brazil', flag: 'br' },
-          usage: { value: 22, period: 'Jun 11, 2015 - Jul 10, 2015' },
-          payment: { name: 'Visa', icon: 'fa fa-cc-visa' },
-          activity: '5 minutes ago'
-        },
-        {
-          avatar: { url: 'img/avatars/3.jpg', status: 'warning' },
-          user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2015' },
-          country: { name: 'India', flag: 'in' },
-          usage: { value: 74, period: 'Jun 11, 2015 - Jul 10, 2015' },
-          payment: { name: 'Stripe', icon: 'fa fa-cc-stripe' },
-          activity: '1 hour ago'
-        },
-        {
-          avatar: { url: 'img/avatars/4.jpg', status: '' },
-          user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2015' },
-          country: { name: 'France', flag: 'fr' },
-          usage: { value: 98, period: 'Jun 11, 2015 - Jul 10, 2015' },
-          payment: { name: 'PayPal', icon: 'fa fa-paypal' },
-          activity: 'Last month'
-        },
-        {
-          avatar: { url: 'img/avatars/5.jpg', status: 'success' },
-          user: { name: 'Agapetus Tadeáš', new: true, registered: 'Jan 1, 2015' },
-          country: { name: 'Spain', flag: 'es' },
-          usage: { value: 22, period: 'Jun 11, 2015 - Jul 10, 2015' },
-          payment: { name: 'Google Wallet', icon: 'fa fa-google-wallet' },
-          activity: 'Last week'
-        },
-        {
-          avatar: { url: 'img/avatars/6.jpg', status: 'danger' },
-          user: { name: 'Friderik Dávid', new: true, registered: 'Jan 1, 2015' },
-          country: { name: 'Poland', flag: 'pl' },
-          usage: { value: 43, period: 'Jun 11, 2015 - Jul 10, 2015' },
-          payment: { name: 'Amex', icon: 'fa fa-cc-amex' },
-          activity: 'Last week'
-        }
-      ],
-      tableFields: {
-        avatar: {
-          label: '<i class="icon-people"></i>',
-          class: 'text-center'
-        },
-        user: {
-          label: 'User'
-        },
-        country: {
-          label: 'Country',
-          class: 'text-center'
-        },
-        usage: {
-          label: 'Usage'
-        },
-        payment: {
-          label: 'Payment method',
-          class: 'text-center'
-        },
-        activity: {
-          label: 'Activity'
-        }
-      }
-    }
+      form: {},
+      menu: "",
+      schema: [],
+      tableItems: [],
+      tableFields: []
+    };
   },
   methods: {
-    variant (value) {
-      let $variant
-      if (value <= 25) {
-        $variant = 'info'
-      } else if (value > 25 && value <= 50) {
-        $variant = 'success'
-      } else if (value > 50 && value <= 75) {
-        $variant = 'warning'
-      } else if (value > 75 && value <= 100) {
-        $variant = 'danger'
-      }
-      return $variant
+    edit(data) {
+      this.form = data;
+      console.log(data);
     },
-    flag (value) {
-      return 'flag-icon flag-icon-' + value
+    onSubmit(evt) {
+      evt.preventDefault();
+
+      alert(JSON.stringify(this.form));
+    },
+    onReset(evt) {
+      evt.preventDefault();
+      this.form = {};
+    },
+    getData(menu) {
+      const that = this;
+
+      this.schema.map(item => {
+        if (item.name === this.$route.params.id) {
+          this.tableFields = item.children;
+        }
+      });
+
+      this.$apollo
+        .query({
+          query: gql`
+          {
+            data:${menu.toLowerCase() + "s"}{
+              id
+              ${that.tableFields.map((item, i) => {
+                if (
+                  item.type !== "Int" &&
+                  item.type !== "Int!" &&
+                  item.type !== "String!" &&
+                  item.type !== "String" &&
+                  item.type !== "Float" &&
+                  item.type !== "Float!" &&
+                  item.type !== "[Int]" &&
+                  item.type !== "[Int]!" &&
+                  item.type !== "[String]!" &&
+                  item.type !== "[String]" &&
+                  item.type !== "[Float]" &&
+                  item.type !== "[Float]!" &&
+                  item.type !== "Boolean" &&
+                  item.type !== "Boolean!" &&
+                  item.type !== "[Boolean]" &&
+                  item.type !== "[Boolean]!"
+                ) {
+                  return (
+                    item.name +
+                    `{
+                      id 
+                      name
+                    }`
+                  );
+                } else {
+                  return item.name;
+                }
+              }).join(`
+              `)}
+          }
+          }
+        `
+        })
+        .then(res => {
+          that.tableItems = res.data.data;
+          console.log(res.data.data);
+        });
     }
+  },
+  watch: {
+    $route() {
+      console.log(this.$route.params.id);
+      this.menu = this.$route.params.id;
+
+      this.getData(this.menu);
+    }
+  },
+  created() {
+    const that = this;
+    axios
+      .get("https://us-central1-vienvu-7e64f.cloudfunctions.net/schema")
+      .then(data => {
+        const nav = [];
+        data = data.data;
+        console.log(data);
+        data.map(item => {
+          nav.push({
+            name: item.name,
+            children: item.children,
+            url: "/" + item.name
+          });
+        });
+        that.schema = nav;
+
+        that.menu = that.$route.params.id;
+        that.getData(that.menu);
+      });
   }
-}
+};
 </script>
 
 <style>
-  /* IE fix */
-  #card-chart-01, #card-chart-02 {
-    width: 100% !important;
-  }
+/* IE fix */
+#card-chart-01,
+#card-chart-02 {
+  width: 100% !important;
+}
 </style>

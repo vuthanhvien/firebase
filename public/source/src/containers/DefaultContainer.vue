@@ -62,10 +62,11 @@
 </template>
 
 <script>
-import nav from '@/_nav'
 import { Header as AppHeader, SidebarToggler, Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, Aside as AppAside, AsideToggler, Footer as TheFooter, Breadcrumb } from '@coreui/vue'
 import DefaultAside from './DefaultAside'
+import gql from 'graphql-tag'
 import DefaultHeaderDropdownAccnt from './DefaultHeaderDropdownAccnt'
+import axios from 'axios';
 
 export default {
   name: 'DefaultContainer',
@@ -87,8 +88,24 @@ export default {
   },
   data () {
     return {
-      nav: nav.items
+      nav: []
     }
+  },
+  created(){
+    const that = this;
+    axios.get('https://us-central1-vienvu-7e64f.cloudfunctions.net/getSchema').then(data => {
+      const nav = [];
+      data = data.data;
+      console.log(data);
+      data.map(item=>{
+          nav.push({
+            name: item.name,
+            url: '/'+item.name
+          })
+      })
+      console.log(nav);
+      that.nav = nav;
+    });
   },
   computed: {
     name () {
