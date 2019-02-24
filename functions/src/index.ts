@@ -11,12 +11,24 @@ import * as firebase from 'firebase-admin'
 firebase.initializeApp()
 
 const getData = new Promise((resolve, reject) => {
-    firebase.database().ref('/schema').on('value', snapshot => {
-        resolve(snapshot.val())
+    firebase.firestore().collection('schema').onSnapshot((snapshot) => {
+        const out: any = {};
+        snapshot.forEach(doc => {
+            // const post = doc.data();
+            // const postTmp: any = {}
+
+            // Object.keys(post).map(key => {
+            //     postTmp.key = key;
+            //     postTmp.type = post[key];
+            // })
+            out[doc.id] = doc.data()
+
+        });
+        resolve(out)
     })
 })
 
-
+// const getData = firebase.firestore().doc('schema').get();
 
 export const api = https.onRequest(async (request, response) => {
     let schemaData;
@@ -129,14 +141,16 @@ export const api = https.onRequest(async (request, response) => {
 
 
 
-export const getSchema = https.onRequest(async (req, res) => {
+export const getSchema = https.onRequest((req, res) => {
     const cors = require('cors')({ origin: true });
     let out;
 
-    await getData.then(data => {
+    getData.then(data => {
         out = data;
-    })
-    return cors(req, res, () => {
-        res.send(JSON.stringify(out));
-    });
+        cors(req, res, () => {
+            res.send(JSON.stringify(out));
+        });
+
+    }).catch(err => console.log(err))
+    // return
 });
