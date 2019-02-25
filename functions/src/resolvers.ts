@@ -153,10 +153,39 @@ const makeData = (schemaArray, admin) => {
         };
 
 
-        temp[item.name.toLowerCase() + 's'] = async () => {
+        temp[item.name.toLowerCase() + 's'] = async (_, { where, limit, skip, orderBy }) => {
             let postData: any = [];
             await getDatas(item.name.toLowerCase()).then(data => { postData = data; })
-            return postData
+            const _limit = limit || 20;
+            const _skip = skip || 0;
+        
+            let _orderBy = (orderBy && orderBy.indexOf('_') > -1) ? orderBy : 'id_desc';
+            _orderBy = _orderBy.split('_');
+            const _orderType = _orderBy[0];
+            const _orderSort = _orderBy[1] === 'desc' ? -1 : 1;
+
+            postData = postData.sort((a, b)=>{
+                let first = a;
+                let second = b;
+                if(!isNaN(a[_orderType])) {first = a[_orderType]*1}
+                if(!isNaN(b[_orderType])) {second = b[_orderType]*1}
+                if(first < second){
+                    return _orderSort;
+                }else{
+                    return _orderSort * -1;
+                }
+            })
+            const list = postData.slice(_skip, _limit + _skip);
+            const total = postData.length;
+
+
+            return {
+                list: list,
+                total: total,
+                limit: _limit,
+                skip: _skip,
+                orderBy: _orderType + '_'+_orderSort,
+            }
         };
 
 

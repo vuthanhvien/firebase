@@ -93,22 +93,14 @@ export default {
   },
   created(){
     const that = this;
-     const url = "https://vienvu-7e64f.firebaseio.com/schema.json";
-    console.log(url)
-    axios.get(url).then((res)=>{
-        if (res) {
-          console.log(res.data);
-        }
-    }).catch((err)=>console.log(err))
-
     axios.get('https://us-central1-vienvu-7e64f.cloudfunctions.net/getSchema').then(data => {
       const nav = [];
       data = data.data;
       console.log(data);
-      data.map(item=>{
+      Object.keys(data).map(key=>{
           nav.push({
-            name: item.name,
-            url: '/'+item.name
+            name: key,
+            url: '/'+key
           })
       })
       console.log(nav);

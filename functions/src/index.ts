@@ -25,11 +25,6 @@ const getData = new Promise((resolve, reject) => {
 
 export const api = functions.https.onRequest(async (requests, response) => {
     let schemaData;
-    // await getData.then(data => {
-    //     console.log(data);
-    //     schemaData = JSON.parse(JSON.stringify(data));
-    // })
-
     await firebase.database().ref('schema/').once('value', (snapshot) => {
         const data = snapshot.val();
         schemaData = data
@@ -89,15 +84,26 @@ export const api = functions.https.onRequest(async (requests, response) => {
     schemaString += `type Query {
 	`
     schemaArray.map(item => {
-        schemaString += `	${item.name.toLowerCase()}s: [${item.name}]
+        schemaString += `	${item.name.toLowerCase()}s(where: Json, limit: Int, skip: Int, orderBy: String): Pagination${item.name}
 	`
         schemaString += `	${item.name.toLowerCase()}(id: String!): ${item.name}
 	`
-
     })
 
+
     schemaString += `}
-`
+    `
+    schemaArray.map(item=>{
+        schemaString += `type Pagination${item.name}{
+            skip: Int
+            limit: Int
+            list: [${item.name}]
+            total: Int
+            orderBy: String
+        }
+        `  
+    })
+
 
     const resolvers = makeresolvers(schemaArray, firebase)
     // const resolvers;
@@ -143,43 +149,13 @@ export const api = functions.https.onRequest(async (requests, response) => {
 
 export const getSchema = functions.https.onRequest(async (req, res) => {
     const cors = require('cors')({ origin: true });
-    let out;
-
-    // await getData.then(data => {
-    //     console.log(data);
-    //     out = data;
-
-
-    // }).catch(err => console.log(err))
-
     await firebase.database().ref('schema/').once('value', (snapshot) => {
         const data = snapshot.val();
-        out = data
+        return cors(req, res, () => {
+            res.send(JSON.stringify(data));
+        });
     });
 
-    return cors(req, res, () => {
-        res.send(JSON.stringify(out));
-    });
+    
     // return
-});
-
-exports.showEvent = functions.https.onRequest((req, res) => {
-    const params = req.url.split("/");
-    const eventId = params[2];
-    console.log('eventId', eventId)
-    return firebase.database().ref('schema/' + eventId).once('value', (snapshot) => {
-        const event = snapshot.val();
-        console.log('event', event)
-        res.send(`
-            <!doctype html>
-            <html>
-                <head>
-                    <title>${event.name}</title>
-                </head>
-                <body>
-                    <h1>Title ${event.name} in ${event.city}</h1>
-                </body>
-            </html>`
-        );
-    });
 });
