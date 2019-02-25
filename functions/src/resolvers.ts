@@ -132,7 +132,7 @@ const makeData = (schemaArray, admin) => {
                         })
                     } else {
 
-                        return postData.find(child => child.id === parent[key])
+                        return postData.find(child => child.id === parent[item.name])
                     }
                 };
 
