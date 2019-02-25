@@ -1,4 +1,4 @@
-import { https } from "firebase-functions"
+import * as functions from "firebase-functions"
 // import { getData } from './config';
 import * as bodyParser from "body-parser"
 import * as express from "express"
@@ -6,35 +6,35 @@ import { graphqlExpress, graphiqlExpress } from "graphql-server-express"
 import { printSchema } from "graphql/utilities/schemaPrinter"
 import { makeExecutableSchema } from "graphql-tools"
 import makeresolvers from './resolvers';
+import axios from 'axios';
 
 import * as firebase from 'firebase-admin'
 firebase.initializeApp()
 
 const getData = new Promise((resolve, reject) => {
-    firebase.firestore().collection('schema').onSnapshot((snapshot) => {
-        const out: any = {};
-        snapshot.forEach(doc => {
-            // const post = doc.data();
-            // const postTmp: any = {}
+    const projectId = firebase.instanceId().app.options.projectId
+    const url = "https://" + projectId + ".firebaseio.com/schema.json";
+    console.log(url)
+    axios.get(url).then((res) => {
+        if (res) { resolve(res.data) }
+    }).catch((err) => console.log(err))
 
-            // Object.keys(post).map(key => {
-            //     postTmp.key = key;
-            //     postTmp.type = post[key];
-            // })
-            out[doc.id] = doc.data()
-
-        });
-        resolve(out)
-    })
 })
 
 // const getData = firebase.firestore().doc('schema').get();
 
-export const api = https.onRequest(async (request, response) => {
+export const api = functions.https.onRequest(async (requests, response) => {
     let schemaData;
-    await getData.then(data => {
-        schemaData = JSON.parse(JSON.stringify(data));
-    })
+    // await getData.then(data => {
+    //     console.log(data);
+    //     schemaData = JSON.parse(JSON.stringify(data));
+    // })
+
+    await firebase.database().ref('schema/').once('value', (snapshot) => {
+        const data = snapshot.val();
+        schemaData = data
+    });
+
     let schemaString = `
     scalar Json
 
@@ -135,22 +135,51 @@ export const api = https.onRequest(async (request, response) => {
         res.send(printSchema(schema))
     })
 
-    return graphQLServer(request, response)
+    return graphQLServer(requests, response)
 })
 
 
 
 
-export const getSchema = https.onRequest((req, res) => {
+export const getSchema = functions.https.onRequest(async (req, res) => {
     const cors = require('cors')({ origin: true });
     let out;
 
-    getData.then(data => {
-        out = data;
-        cors(req, res, () => {
-            res.send(JSON.stringify(out));
-        });
+    // await getData.then(data => {
+    //     console.log(data);
+    //     out = data;
 
-    }).catch(err => console.log(err))
+
+    // }).catch(err => console.log(err))
+
+    await firebase.database().ref('schema/').once('value', (snapshot) => {
+        const data = snapshot.val();
+        out = data
+    });
+
+    return cors(req, res, () => {
+        res.send(JSON.stringify(out));
+    });
     // return
+});
+
+exports.showEvent = functions.https.onRequest((req, res) => {
+    const params = req.url.split("/");
+    const eventId = params[2];
+    console.log('eventId', eventId)
+    return firebase.database().ref('schema/' + eventId).once('value', (snapshot) => {
+        const event = snapshot.val();
+        console.log('event', event)
+        res.send(`
+            <!doctype html>
+            <html>
+                <head>
+                    <title>${event.name}</title>
+                </head>
+                <body>
+                    <h1>Title ${event.name} in ${event.city}</h1>
+                </body>
+            </html>`
+        );
+    });
 });
