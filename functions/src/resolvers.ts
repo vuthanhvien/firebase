@@ -131,7 +131,7 @@ const makeData = (schemaArray, admin) => {
                             return child[field.name.toLowerCase()] === parent.id
                         })
                     } else {
-
+                        console.log(parent, item.name, parent[item.name])
                         return postData.find(child => child.id === parent[item.name])
                     }
                 };
