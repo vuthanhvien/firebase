@@ -154,27 +154,47 @@ const makeData = (schemaArray, admin) => {
 
 
         temp[item.name.toLowerCase() + 's'] = async (_, { where, limit, skip, orderBy }) => {
+
+
             let postData: any = [];
             await getDatas(item.name.toLowerCase()).then(data => { postData = data; })
             const _limit = limit || 20;
             const _skip = skip || 0;
-        
+
             let _orderBy = (orderBy && orderBy.indexOf('_') > -1) ? orderBy : 'id_desc';
             _orderBy = _orderBy.split('_');
             const _orderType = _orderBy[0];
             const _orderSort = _orderBy[1] === 'desc' ? -1 : 1;
 
-            postData = postData.sort((a, b)=>{
+            postData = postData.sort((a, b) => {
                 let first = a;
                 let second = b;
-                if(!isNaN(a[_orderType])) {first = a[_orderType]*1}
-                if(!isNaN(b[_orderType])) {second = b[_orderType]*1}
-                if(first < second){
+                if (!isNaN(a[_orderType])) { first = a[_orderType] * 1 }
+                if (!isNaN(b[_orderType])) { second = b[_orderType] * 1 }
+                if (first < second) {
                     return _orderSort;
-                }else{
+                } else {
                     return _orderSort * -1;
                 }
             })
+            if (where) {
+                postData = postData.filter(d => {
+                    let isGet = true;
+                    Object.keys(where).map(key => {
+                        const keyName = key.split('_')[0];
+                        const keyType = key.split('_')[1];
+                        if (keyType === 'like') {
+                            if (d[keyName].indexOf(where[key]) === -1) {
+                                isGet = false;
+                            }
+                        } else if (d[keyName] !== where[key]) {
+                            isGet = false;
+                        }
+                    })
+                    return isGet;
+                })
+            }
+
             const list = postData.slice(_skip, _limit + _skip);
             const total = postData.length;
 
@@ -184,7 +204,7 @@ const makeData = (schemaArray, admin) => {
                 total: total,
                 limit: _limit,
                 skip: _skip,
-                orderBy: _orderType + '_'+_orderSort,
+                orderBy: _orderType + '_' + _orderSort,
             }
         };
 

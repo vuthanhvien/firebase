@@ -93,7 +93,7 @@ export const api = functions.https.onRequest(async (requests, response) => {
 
     schemaString += `}
     `
-    schemaArray.map(item=>{
+    schemaArray.map(item => {
         schemaString += `type Pagination${item.name}{
             skip: Int
             limit: Int
@@ -101,7 +101,7 @@ export const api = functions.https.onRequest(async (requests, response) => {
             total: Int
             orderBy: String
         }
-        `  
+        `
     })
 
 
@@ -155,7 +155,33 @@ export const getSchema = functions.https.onRequest(async (req, res) => {
             res.send(JSON.stringify(data));
         });
     });
+});
 
-    
-    // return
+
+
+
+
+export const land = functions.https.onRequest((r, ee) => {
+
+    const { Nuxt } = require('nuxt')
+    const app = express()
+    const config = {
+        dev: false,
+        buildDir: 'nuxtDist',
+        build: {
+            publicPath: '/nuxtPublic/'
+        }
+    }
+    const nuxt = new Nuxt(config)
+
+    const handleRequest = (req, res) => {
+        res.set('Cache-Control', 'public, max-age=600, s-maxage=1200')
+        nuxt.renderRoute('/').then(result => {
+            res.send(result.html)
+        }).catch(e => {
+            res.send(e)
+        })
+    }
+    app.get('*', handleRequest)
+
 });
