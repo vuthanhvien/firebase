@@ -169,7 +169,7 @@ export const land = functions.https.onRequest((r, ee) => {
         dev: false,
         buildDir: 'nuxtDist',
         build: {
-            publicPath: '/nuxtPublic/'
+            publicPath: '/land/'
         }
     }
     const nuxt = new Nuxt(config)
@@ -177,7 +177,7 @@ export const land = functions.https.onRequest((r, ee) => {
     const handleRequest = (req, res) => {
         res.set('Cache-Control', 'public, max-age=600, s-maxage=1200')
         nuxt.renderRoute('/').then(result => {
-            res.send(result.html)
+            res.send('result.html')
         }).catch(e => {
             res.send(e)
         })
