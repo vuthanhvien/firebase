@@ -45,7 +45,7 @@
        
     </div>
     <b-modal title="Add new model" ref="myModalRef" size="lg" id="modalModel" hide-footer>
-      <b-form @submit="onSubmit" @reset="onReset">
+      <b-form @submit="onSubmit">
         <b-form-group label-for="exampleInput2">
           <div>
             <b-form-input pattern="\S+" required type="text" v-model="form.name" :placeholder="'Enter model name'"/>
@@ -78,7 +78,6 @@
         <div class="text-right">
           <b-button type="button" variant="outline-basic" @click="hideModal">Close</b-button>&nbsp;
           <b-button type="submit" variant="primary">Submit</b-button>&nbsp;
-          <b-button type="reset" variant="outline-danger">Reset</b-button>
         </div>
       </b-form>
     </b-modal>
@@ -211,7 +210,7 @@ export default {
         that.nav = nav;
         nav.map(item => {
           that.options.push(item.name);
-          that.options.push(item.name + "!");
+          // that.options.push(item.name + "!");
         });
       });
   },

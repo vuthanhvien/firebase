@@ -8,10 +8,11 @@
       </div>
       <div class="col-5">
         <div class="text-right">
-      <a class="pointer" @click="editModule()"><i class="fa fa-pencil" /> Edit module</a> &nbsp;&nbsp;
-          
+          <a class="pointer" @click="editModule()">
+            <i class="fa fa-pencil" /> Edit module</a> &nbsp;&nbsp;
+
           <b-button v-b-modal.modal1 variant="primary">Add
-            <i class="fa fa-plus"/>
+            <i class="fa fa-plus" />
           </b-button>
         </div>
       </div>
@@ -20,27 +21,18 @@
     <br>
     <b-modal :title="'Add new ' +menu" ref="myModalRef" size="lg" id="modal1" hide-footer>
       <b-form @submit="onSubmit" @reset="onReset">
-        <b-form-group
-          v-for="col of tableFields"
-          :key="col.name"
-          :label="col.label"
-          label-for="exampleInput2"
-        >
+        <b-form-group v-for="col of tableFields" :key="col.name" :label="col.label" label-for="exampleInput2">
           <div v-if="col.type.indexOf('String') > -1 ">
-            <b-form-textarea
-              type="text"
-              v-model="form[col.name]"
-              :placeholder="'Enter '+ col.name"
-            />
+            <b-form-textarea type="text" v-model="form[col.name]" :placeholder="'Enter '+ col.name" />
           </div>
           <div v-else-if="col.type.indexOf('Int') > -1 ">
-            <b-form-input :id="'id_'+col.name" type="number" v-model="form[col.name]" :placeholder="'Enter '+ col.name"/>
+            <b-form-input :id="'id_'+col.name" type="number" v-model="form[col.name]" :placeholder="'Enter '+ col.name" />
           </div>
           <div v-else>
-            <b-form-input :id="'id_'+col.name" type="text" v-model="form[col.name]" :placeholder="'Enter '+ col.name"/>
+            <b-form-input :id="'id_'+col.name" type="text" v-model="form[col.name]" :placeholder="'Enter '+ col.name" />
           </div>
         </b-form-group>
-     <footer class=" modal-footer" style="margin: -15px">
+        <footer class=" modal-footer" style="margin: -15px">
           <b-button type="button" variant="outline-basic" @click="hideModal">Close</b-button>&nbsp;
           <b-button type="submit" variant="primary">Submit</b-button>&nbsp;
           <b-button type="reset" variant="outline-danger">Reset</b-button>
@@ -50,50 +42,75 @@
 
     <div>
 
-  <!-- Modal Component -->
-  <b-modal ref="deleteModalRef" size="md" id="modalDelete" :title="'Delete: '+ deleteItem.name" hide-footer>
-    <p>Are you sure?</p>
-    <br>
-    <p>Id: <strong>{{deleteItem.id}}</strong></p>
-    <p>Name: <strong>{{deleteItem.name}}</strong></p>
-    <br>
-     <footer class=" modal-footer" style="margin: -15px">
+      <!-- Modal Component -->
+      <b-modal ref="deleteModalRef" size="md" id="modalDelete" :title="'Delete: '+ deleteItem.name" hide-footer>
+        <p>Are you sure?</p>
+        <br>
+        <p>Id:
+          <strong>{{deleteItem.id}}</strong>
+        </p>
+        <p>Name:
+          <strong>{{deleteItem.name}}</strong>
+        </p>
+        <br>
+        <footer class=" modal-footer" style="margin: -15px">
           <b-button type="button" variant="outline-basic" @click="hideModal">Close</b-button>&nbsp;
           <b-button type="reset" variant="danger">Delete</b-button>
         </footer>
-  </b-modal>
-</div>
-
+      </b-modal>
+    </div>
+     <div>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-end" >
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     <div class="table-outner">
       <div v-if="loading" class="loading">
         <img src="https://loading.io/assets/img/css/sunny.svg" />
       </div>
+     
       <table class="table">
+        <thead>
         <tr>
-          <th class="text-center" style="width: 100px; white-space: nowrap; background: #8dcde459;">Action</th>
-          <th
-            :style="{width: col.name == 'id' ||  col.name == 'createdAt'  || col.name == 'updatedAt' ? '50px' : ''}"
-            v-for="col of tableFields"
-            :key="col.name"
-            :class="'class-header-'+col.name"
-          >{{col.name}}</th>
+          <th class="text-center" style=" background: #8dcde459;">Action</th>
+          <th :style="{width: col.name == 'id' ||  col.name == 'createdAt'  || col.name == 'updatedAt' ? '50px' : ''}" v-for="col of tableFields"
+            :key="col.name" :class="'class-header-'+col.name">{{col.name}}</th>
         </tr>
+        </thead>
+        <tbody>
         <tr v-for="row of tableItems" :key="row.id">
-          <td style="width: 100px; white-space: nowrap; background: #8dcde459;">
-            <button class="btn btn-primary" v-b-modal.modal1 @click="edit(row)">Edit</button>&nbsp;
-            <button class="btn btn-danger" v-b-modal.modalDelete @click="deleteRow(row)" >Delete</button>
+          <td class="td-action">
+            <button class="btn btn-primary btn-sm" v-b-modal.modal1 @click="edit(row)">Edit</button>&nbsp;
+            <button class="btn btn-danger btn-sm" v-b-modal.modalDelete @click="deleteRow(row)">
+              <i class="fa fa-trash" />
+            </button>
           </td>
-          <td
-            v-for="col of tableFields"
-            :class="'class-cell-'+col.name"
-            :key="col.name"
-          >
-          <p>{{row[col.name] && row[col.name].id ? row[col.name].name : row[col.name]}}</p></td>
-          
+          <td v-for="col of tableFields" :class="'class-cell-'+col.name" :key="col.name">
+            <div  v-if="col.name === 'color'">
+              <div style="height: 20px; width: 20px; border-radius: 2px" :style="{background: row[col.name]}"></div>
+            </div>
+            <p v-else>{{row[col.name] && row[col.name].id ? row[col.name].name : row[col.name]}}</p>
+          </td>
+
         </tr>
+        </tbody>
       </table>
-    </div>
-    <div class="text-right" style="padding: 5px">
     </div>
   </div>
 </template>
@@ -114,11 +131,11 @@ export default {
       tableItems: [],
       tableFields: [],
       loading: false,
-      deleteItem : {}
+      deleteItem: {}
     };
   },
   methods: {
-    deleteRow(item){
+    deleteRow(item) {
       this.deleteItem = item;
     },
     editModule() {},
@@ -268,7 +285,13 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+.td-action {
+  width: 100px;
+  white-space: nowrap;
+  background: rgba(141, 205, 228, 0.35);
+  padding: 11px;
+}
 .table-outner {
   overflow: auto;
   background: white;
@@ -277,20 +300,37 @@ export default {
   position: relative;
   min-height: 300px;
 }
+
 .class-cell-id {
   white-space: nowrap;
 }
+
+th,
+td {
+  vertical-align: middle;
+}
+
 th {
   text-transform: capitalize;
 }
+thead {
+  background: #21a8d8;
+  color: white;
+}
+
 td {
   p {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 300px;
     overflow: hidden;
+    margin: 0;
   }
 }
+.table {
+  margin-bottom: 0;
+}
+
 .loading {
   position: absolute;
   width: 100%;
