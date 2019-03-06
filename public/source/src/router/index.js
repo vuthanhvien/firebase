@@ -16,7 +16,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/Posts',
+      redirect: '/Post',
       name: 'Home',
       component: DefaultContainer,
       children: [

@@ -159,13 +159,20 @@ export const getSchema = functions.https.onRequest(async (req, res) => {
 
 
 export const setSchema = functions.https.onRequest(async (req, res) => {
-    const name = req.params.name;
-    const data = JSON.parse(req.params.data);
-    console.log(data, name)
+    const name = req.query.name;
+    let data;
+    try {
+        data = JSON.parse(req.query.data);
+    } catch (e) {
+        data = {}
+    }
+    console.log(req.query, data, name)
     const cors = require('cors')({ origin: true });
     await firebase.database().ref('schema/' + name).set(data).then(response => {
         console.log(response)
-        res.send(JSON.stringify({ success: true, msg: 'Successfully' }))
+        return cors(req, res, () => {
+            res.send(JSON.stringify({ success: true, msg: 'Successfully' }))
+        });
     })
 });
 

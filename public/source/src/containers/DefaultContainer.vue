@@ -3,8 +3,8 @@
     <AppHeader fixed>
       <SidebarToggler class="d-lg-none" display="md" mobile />
       <b-link class="navbar-brand" to="#">
-        <img class="navbar-brand-full" src="img/brand/logo.svg" width="89" height="25" alt="CoreUI Logo">
-        <img class="navbar-brand-minimized" src="img/brand/sygnet.svg" width="30" height="30" alt="CoreUI Logo">
+        <img class="navbar-brand-full" src="https://vienvu.com/logo.png"  height="45" alt="CoreUI Logo">
+        <img class="navbar-brand-minimized" src="https://vienvu.com/logo.png"   height="30" alt="CoreUI Logo">
       </b-link>
       <SidebarToggler class="d-md-down-none" display="lg" />
       <b-navbar-nav class="d-md-down-none">
@@ -181,7 +181,27 @@ export default {
       ];
     },
     onSubmit() {
-      console.log(this.form.name, this.fields)
+      console.log(this.form.name, this.fields);
+      const fields = {};
+      this.fields.map(item => {
+        fields[item.key] = item.type;
+      });
+      const that = this;
+      const data = {
+        name: this.form.name,
+        data: JSON.stringify(fields)
+      };
+      axios
+        .get(
+          "https://us-central1-vienvu-7e64f.cloudfunctions.net/setSchema?name=" +
+            this.form.name +
+            "&data=" +
+            JSON.stringify(fields)
+        )
+        .then(data => {
+          console.log(data);
+          location.reload();
+        });
     },
     addNewField() {
       this.fields.push({ id: "", type: "String" });
