@@ -3,6 +3,8 @@ import Router from 'vue-router'
 
 // Containers
 const Posts = () => import('@/views/Posts')
+const FileManager = () => import('@/views/FileManager')
+const Users = () => import('@/views/Users')
 const DefaultContainer = () => import('@/containers/DefaultContainer')
 
 Vue.use(Router)
@@ -18,7 +20,17 @@ export default new Router({
       name: 'Home',
       component: DefaultContainer,
       children: [
-        
+         
+        {
+          path: '/file',
+          name: 'FileManager',
+          component: FileManager
+        }, 
+        {
+          path: '/users',
+          name: 'User',
+          component: Users
+        },
         {
           path: '/:id',
           name: 'Posts',

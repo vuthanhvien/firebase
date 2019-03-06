@@ -9,6 +9,18 @@ export default {
 </script>
 
 <style lang="scss">
+.custom-select,
+  .form-control{
+   color: #111!important;
+    font-weight: bold!important;
+  }
+  .pointer{
+    cursor: pointer;
+  }
+  a.pointer:hover{
+    color: #20a8d8!important;
+    text-decoration: underline!important;
+  }
   // CoreUI Icons Set
   @import '~@coreui/icons/css/coreui-icons.min.css';
   /* Import Font Awesome Icons Set */

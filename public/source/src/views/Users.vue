@@ -40,37 +40,20 @@
             <b-form-input :id="'id_'+col.name" type="text" v-model="form[col.name]" :placeholder="'Enter '+ col.name"/>
           </div>
         </b-form-group>
-     <footer class=" modal-footer" style="margin: -15px">
+        <div class="text-right">
           <b-button type="button" variant="outline-basic" @click="hideModal">Close</b-button>&nbsp;
           <b-button type="submit" variant="primary">Submit</b-button>&nbsp;
           <b-button type="reset" variant="outline-danger">Reset</b-button>
-        </footer>
+        </div>
       </b-form>
     </b-modal>
-
-    <div>
-
-  <!-- Modal Component -->
-  <b-modal ref="deleteModalRef" size="md" id="modalDelete" :title="'Delete: '+ deleteItem.name" hide-footer>
-    <p>Are you sure?</p>
-    <br>
-    <p>Id: <strong>{{deleteItem.id}}</strong></p>
-    <p>Name: <strong>{{deleteItem.name}}</strong></p>
-    <br>
-     <footer class=" modal-footer" style="margin: -15px">
-          <b-button type="button" variant="outline-basic" @click="hideModal">Close</b-button>&nbsp;
-          <b-button type="reset" variant="danger">Delete</b-button>
-        </footer>
-  </b-modal>
-</div>
-
     <div class="table-outner">
       <div v-if="loading" class="loading">
         <img src="https://loading.io/assets/img/css/sunny.svg" />
       </div>
       <table class="table">
         <tr>
-          <th class="text-center" style="width: 100px; white-space: nowrap; background: #8dcde459;">Action</th>
+          <th class="text-center">Action</th>
           <th
             :style="{width: col.name == 'id' ||  col.name == 'createdAt'  || col.name == 'updatedAt' ? '50px' : ''}"
             v-for="col of tableFields"
@@ -79,9 +62,9 @@
           >{{col.name}}</th>
         </tr>
         <tr v-for="row of tableItems" :key="row.id">
-          <td style="width: 100px; white-space: nowrap; background: #8dcde459;">
+          <td style="width: 100px; white-space: nowrap">
             <button class="btn btn-primary" v-b-modal.modal1 @click="edit(row)">Edit</button>&nbsp;
-            <button class="btn btn-danger" v-b-modal.modalDelete @click="deleteRow(row)" >Delete</button>
+            <button class="btn btn-danger">Delete</button>
           </td>
           <td
             v-for="col of tableFields"
@@ -113,18 +96,15 @@ export default {
       schema: [],
       tableItems: [],
       tableFields: [],
-      loading: false,
-      deleteItem : {}
+      loading: false
     };
   },
   methods: {
-    deleteRow(item){
-      this.deleteItem = item;
+    editModule(){
+
     },
-    editModule() {},
     hideModal() {
       this.$refs.myModalRef.hide();
-      this.$refs.deleteModalRef.hide();
     },
     edit(data) {
       this.form = JSON.parse(JSON.stringify(data));
@@ -261,7 +241,6 @@ export default {
           });
         });
         that.schema = nav;
-        console.log(that.schema);
         that.menu = that.$route.params.id;
         that.getData(that.menu);
       });
@@ -269,7 +248,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.table-outner {
+.table-outner{
   overflow: auto;
   background: white;
   border: 1px solid #c8ced3;
@@ -279,9 +258,6 @@ export default {
 }
 .class-cell-id {
   white-space: nowrap;
-}
-th {
-  text-transform: capitalize;
 }
 td {
   p {
