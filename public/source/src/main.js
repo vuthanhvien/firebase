@@ -13,6 +13,19 @@ import { createProvider } from './vue-apollo'
 // todo
 // cssVars()
 
+import firebase from "firebase/app";
+const config = {
+  apiKey: "AIzaSyA_SaxCtCPPEqkpTKdz2yxa1oSySVzLHfw",
+  authDomain: "vienvu-7e64f.firebaseapp.com",
+  databaseURL: "https://vienvu-7e64f.firebaseio.com",
+  projectId: "vienvu-7e64f",
+  storageBucket: "vienvu-7e64f.appspot.com",
+  messagingSenderId: "236828354"
+};
+
+firebase.initializeApp(config);
+
+
 Vue.use(BootstrapVue)
 
 /* eslint-disable no-new */
@@ -21,7 +34,6 @@ new Vue({
   router,
   template: '<App/>',
   apolloProvider: createProvider(),
-
   components: {
     App
   }

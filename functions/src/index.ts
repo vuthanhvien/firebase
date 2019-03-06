@@ -177,30 +177,50 @@ export const setSchema = functions.https.onRequest(async (req, res) => {
 });
 
 
-
-
-
-export const land = functions.https.onRequest((r, ee) => {
-
-    const { Nuxt } = require('nuxt')
-    const app = express()
-    const config = {
-        dev: false,
-        buildDir: 'nuxtDist',
-        build: {
-            publicPath: '/land/'
-        }
-    }
-    const nuxt = new Nuxt(config)
-
-    const handleRequest = (req, res) => {
-        res.set('Cache-Control', 'public, max-age=600, s-maxage=1200')
-        nuxt.renderRoute('/').then(result => {
-            res.send('result.html')
-        }).catch(e => {
-            res.send(e)
+// (<any> firebase.auth().signInWithEmailAndPassword).credential 
+export const signIn = functions.https.onRequest((req, res) => {
+    const cors = require('cors')({ origin: true });
+    const email = req.body.email;
+    const password = req.body.password;
+    firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(user => {
+            user.getIdToken().then(idToken => {
+                return cors(req, res, () => {
+                    res.status(200).json({ idToken: idToken });
+                })
+            })
         })
-    }
-    app.get('*', handleRequest)
+        .catch(error => {
+            return cors(req, res, () => {
+                res.status(400).json(error.toJSON());
+            })
+        });
+})
 
-});
+
+
+
+// export const land = functions.https.onRequest((r, ee) => {
+
+//     const { Nuxt } = require('nuxt')
+//     const app = express()
+//     const config = {
+//         dev: false,
+//         buildDir: 'nuxtDist',
+//         build: {
+//             publicPath: '/land/'
+//         }
+//     }
+//     const nuxt = new Nuxt(config)
+
+//     const handleRequest = (req, res) => {
+//         res.set('Cache-Control', 'public, max-age=600, s-maxage=1200')
+//         nuxt.renderRoute('/').then(result => {
+//             res.send('result.html')
+//         }).catch(e => {
+//             res.send(e)
+//         })
+//     }
+//     app.get('*', handleRequest)
+
+// });

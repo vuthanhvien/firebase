@@ -209,7 +209,7 @@ export default {
       const arrayKey = [];
       this.tableFields.map(item => {
         if (this.typeNormals.indexOf(item.type) === -1) {
-          arrayKey[item.type] = item;
+          arrayKey[item.name] = item;
         }
       });
       const that = this;
