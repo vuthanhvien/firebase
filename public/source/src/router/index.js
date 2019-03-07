@@ -15,18 +15,20 @@ const Page500 = () => import('@/views/pages/Page500')
 
 Vue.use(Router)
 
-const guard = function(to, from, next) {
+const guard = function (to, from, next) {
   // check for valid auth token
   const token = localStorage.getItem('token');
   let tokenObj = {};
-  try{
-    tokenObj = JSON.parse(token);
-  }catch(e){
-    tokenObj = {};
+  if (token) {
+    try {
+      tokenObj = JSON.parse(token);
+    } catch (e) {
+      tokenObj = {};
+    }
   }
-  if(tokenObj.token){
+  if (tokenObj.token) {
     next();
-  }else{
+  } else {
     window.location.href = "/#/login";
   }
 };
@@ -66,12 +68,12 @@ export default new Router({
         guard(to, from, next);
       },
       children: [
-        
+
         {
           path: 'filemanager',
           name: 'FileManager',
           component: FileManager
-        }, 
+        },
         {
           path: 'users',
           name: 'User',

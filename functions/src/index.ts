@@ -178,24 +178,24 @@ export const setSchema = functions.https.onRequest(async (req, res) => {
 
 
 // (<any> firebase.auth().signInWithEmailAndPassword).credential 
-export const signIn = functions.https.onRequest((req, res) => {
-    const cors = require('cors')({ origin: true });
-    const email = req.body.email;
-    const password = req.body.password;
-    firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(user => {
-            user.getIdToken().then(idToken => {
-                return cors(req, res, () => {
-                    res.status(200).json({ idToken: idToken });
-                })
-            })
-        })
-        .catch(error => {
-            return cors(req, res, () => {
-                res.status(400).json(error.toJSON());
-            })
-        });
-})
+// export const signIn = functions.https.onRequest((req, res) => {
+//     const cors = require('cors')({ origin: true });
+//     const email = req.body.email;
+//     const password = req.body.password;
+//     firebase.auth().signInWithEmailAndPassword(email, password)
+//         .then(user => {
+//             user.getIdToken().then(idToken => {
+//                 return cors(req, res, () => {
+//                     res.status(200).json({ idToken: idToken });
+//                 })
+//             })
+//         })
+//         .catch(error => {
+//             return cors(req, res, () => {
+//                 res.status(400).json(error.toJSON());
+//             })
+//         });
+// })
 
 
 

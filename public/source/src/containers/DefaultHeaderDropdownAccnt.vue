@@ -59,7 +59,7 @@ export default {
     logout(){
       const that = this;
       firebase.auth().signOut().then(res=>{
-        localStorage.setItem('token', JSON.stringify({}));
+        localStorage.setItem('token', '');
         that.$router.push({path: '/login'})
       })
     }
