@@ -184,10 +184,10 @@ const makeData = (schemaArray, admin) => {
                         const keyName = key.split('_')[0];
                         const keyType = key.split('_')[1];
                         if (keyType === 'like') {
-                            if (d[keyName].indexOf(where[key]) === -1) {
+                            if (d[keyName.toLowerCase()].indexOf(where[key].toLowerCase()) === -1) {
                                 isGet = false;
                             }
-                        } else if (d[keyName] !== where[key]) {
+                        } else if (d[keyName.toLowerCase()] !== where[key].toLowerCase()) {
                             isGet = false;
                         }
                     })
