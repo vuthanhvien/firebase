@@ -11,15 +11,15 @@ import axios from 'axios';
 import * as firebase from 'firebase-admin'
 firebase.initializeApp()
 
-const getData = new Promise((resolve, reject) => {
-    const projectId = firebase.instanceId().app.options.projectId
-    const url = "https://" + projectId + ".firebaseio.com/schema.json";
-    console.log(url)
-    axios.get(url).then((res) => {
-        if (res) { resolve(res.data) }
-    }).catch((err) => console.log(err))
+// const getData = new Promise((resolve, reject) => {
+//     const projectId = firebase.instanceId().app.options.projectId
+//     const url = "https://" + projectId + ".firebaseio.com/schema.json";
+//     console.log(url)
+//     axios.get(url).then((res) => {
+//         if (res) { resolve(res.data) }
+//     }).catch((err) => console.log(err))
 
-})
+// })
 
 // const getData = firebase.firestore().doc('schema').get();
 
